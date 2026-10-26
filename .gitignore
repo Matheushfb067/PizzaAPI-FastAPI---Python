@@ -1,0 +1,15 @@
+# Segredos locais
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Ambientes virtuais
+.venv/
+venv/
+
+# Banco local SQLite
+*.db
