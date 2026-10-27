@@ -16,3 +16,26 @@ class UserSchema(BaseModel):
     # Criando subclasse que indica que os dados acima devem ser intepretados como um dicionario python padrão
     class config: 
         from_attributes = True
+
+
+'''
+    id é criado automaticamente, então o usuario não precisa passa-lo 
+    status não é necessario pedir para o usuario informa-lo, uma vez que quando o pedido é criado o status será por default PENDENTE
+    preco, só será calculado, quando o usuario finalizar o pedido, portanto não podemos informa-lo.
+'''
+
+class OrderSchema(BaseModel):
+    # A unica informação de fato que será necessaria é o campo user, que é o usuario dono do pedido
+    # Esse campo é uma foreign key do campo de id na tabela User, então é necessario passarmos esse id
+
+    user: int
+
+    class config: 
+        from_attributes = True
+
+class LoginSchema(BaseModel):
+    email: str
+    password: str
+
+    class config:
+        from_attributes = True

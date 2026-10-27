@@ -2,11 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException # Permite organizar as rot
 from models import User
 from dependencies import get_session
 from main import bcrypt_context
-from schemas import UserSchema
+from schemas import UserSchema, LoginSchema
 from sqlalchemy.orm import Session
 
 # Sempre definir um prefixo para as rotas para organizar o código
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
+
+# Função auxiliar de criação de token
+def create_token(email):
+    token = f"kjdashfkdjsakjash{email}"
+    return token
+
 
 @auth_router.get("/")
 async def home():
@@ -83,3 +89,23 @@ async def create_account(user_schema: UserSchema, session: Session = Depends(get
         session.commit() # Salva as alterações no banco
 
         return {"mensagem": f"Usuario cadastrado com sucesso! {user_schema.email}"}
+
+# Proxima rota: login, faz sentido criarmos uma rota de login, uma vez que queremos apenas que usuarios logados possam fazer pedidos
+# O processo de loging que se usa no fastAPI é o processo de uso de Tokens você loga apenas uma unica vez e esse token é usado em todas as rotas que estamos logados
+
+# JWT
+
+# login -> email e senha -> token JWT (Jsom Web token)
+
+@auth_router.post("/login")
+async def login(login_schema: LoginSchema , session: Session = Depends(get_session)):
+    user = session.query(User).filter(User.email==login_schema.email).first()
+    if not user: 
+        raise HTTPException(status_code=400, detail = "Usuario não encontrado!")
+    else:
+        access_token = create_token(user.id)
+        return {
+            "access_token":access_token, 
+            "token_type": "Bearer" # Padrão do token
+            }
+    
